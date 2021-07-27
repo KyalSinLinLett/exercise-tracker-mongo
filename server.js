@@ -67,9 +67,9 @@ app.post('/api/users/:_id/exercises', (req, res) => {
   const { description: desc, ':_id': userId, duration: dura, date: date } = req.body
 
   const payload = {
-    description: desc,
+    date: date == '' ?  new Date().toDateString() : date,
     duration: dura,
-    date: date == '' ?  new Date().toDateString() : date
+    description: desc
   }
 
   console.log(payload)
@@ -83,7 +83,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
       if (data == null) return res.send("unknown _id")
 
-      return res.json(Object.assign({ username: data.username, _id: data._id }, payload))
+      return res.json(Object.assign({ _id: data._id, username: data.username }, payload))
     } 
   )
 })
