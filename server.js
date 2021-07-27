@@ -15,6 +15,8 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+// test : 610049bcbeb145235c07029d
+
 // connect to mongodb
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -42,17 +44,25 @@ app.get('/api/users', (req, res) => {
 
 app.post('/api/users/:_id/exercises', (req, res) => {
 
-  const { description: desc, ':_id': userId, duration: dura, date: date } = req.body
+  var { description: desc, ':_id': userId, duration: dura, date: date } = req.body
 
-  const dateObj = date === undefined ? new Date() : new Date(data)
+  if (date === '') {
+    date = new Date().toDateString()
+  }
 
-  if (dateObj == 'Invalid Date') return res.send('Failed to cast date')
+  date = new Date(date).toDateString()
+
+  if(date == 'Invalid Date') {
+    return res.send(`Cast to date failed`)
+  }
 
   const payload = {
-    date: dateObj,
+    date: date,
     duration: parseInt(dura),
     description: desc
   }
+
+  console.log(payload)
 
   User.findByIdAndUpdate(
     userId, 
@@ -63,15 +73,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
       if (data == null) return res.send("Unknown userId")
 
-      const result = {
-        _id: data._id,
-        username: data.username,
-        description: payload.description,
-        duration: payload.duration,
-        date:  payload.date
-      }
-
-      return res.json(result)
+      return res.json(Object.assign({ _id: data._id, username: data.username }, payload))
     } 
   )
 })
@@ -82,8 +84,8 @@ app.get('/api/users/:_id/logs', (req, res) => {
   User.findById(userId, (err, data) => {
     if (err) return console.log(err)
 
-    var logs = data.log.map((log) => ({ description: log.description, duration: log.duration, date: log.date }))
-
+    var logs = data.log.map((log) => ({ description: log.description, duration: log.duration, date: new Date(log.date).toDateString() }))
+    console.log(logs)
     return res.json(Object.assign({_id: data._id, username: data.username, count: logs.length, log: logs}))
   })
 })
