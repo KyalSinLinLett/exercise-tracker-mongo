@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const { User } = require('./models')
 require('dotenv').config()
 
 app.use(cors())
@@ -17,38 +18,15 @@ app.get('/', (req, res) => {
 // connect to mongodb
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true
-  },
-
-  count: {
-    type: Number
-  },
-
-  log: [{
-    description: {
-      type: String,
-      required: true
-    },
-    duration: {
-      type: Number,
-      required: true
-    },
-    date: {
-      type: Date
-    }
-  }]
-})
-
-const User = mongoose.model('User', userSchema)
-
 app.post('/api/users', (req, res) => {
   const user = new User({ username: req.body.username })
 
   user.save((err, user) => {
-    if (err) return console.log(err)
+    if (err) {
+      const {err: code} = {err: err.code}
+      if (code === 11000) return res.send('Username already taken')
+      return res.send(err)
+    } 
 
     return res.json({ _id: user._id, username: user.username })
   })
@@ -56,18 +34,14 @@ app.post('/api/users', (req, res) => {
 
 app.get('/api/users', (req, res) => {
   User.find({}, { log: 0 }, (err, users) => {
-    if (err) return console.log(err)
+    if (err) return res.send(err)
 
-    console.log(users)
     return res.json(users)
   })
 })
 
-app.post('/api/users//exercises', (req, res) => {
-  return res.send('not found').status(404)
-})
-
 app.post('/api/users/:_id/exercises', (req, res) => {
+
   var { description: desc, ':_id': userId, duration: dura, date: date } = req.body
 
   const payload = {
@@ -83,7 +57,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     (err, data) => {
       if (err) return console.log(err)
 
-      if (data == null) return res.send("unknown _id")
+      if (data == null) return res.send("Unknown userId")
 
       return res.json(Object.assign({ _id: data._id, username: data.username }, payload))
     } 
@@ -98,13 +72,9 @@ app.get('/api/users/:_id/logs', (req, res) => {
 
     var logs = data.log.map((log) => ({ description: log.description, duration: log.duration, date: log.date }))
 
-    console.log(logs)
-
     return res.json(Object.assign({_id: data._id, username: data.username, count: logs.length, log: logs}))
   })
 })
-
-
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)

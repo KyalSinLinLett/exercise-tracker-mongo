@@ -7,7 +7,10 @@ const logSchema = mongoose.Schema({
 })
 
 const userSchema = ({
-    username: String,
+    username: {
+        type: String,
+        unique: true
+    },
     log: [logSchema]
 })
 
