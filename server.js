@@ -67,7 +67,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
   const { description: desc, ':_id': userId, duration: dura, date: date } = req.body
 
   const payload = {
-    date: date == '' ?  new Date().toDateString() : date,
+    date: date == '' ?  new Date() : date,
     duration: parseInt(dura),
     description: desc
   }
