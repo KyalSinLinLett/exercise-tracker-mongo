@@ -50,6 +50,10 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
   date = new Date(date).toDateString()
 
+  if(date == 'Invalid Date') {
+    return res.send(`Cast to date failed`)
+  }
+
   const payload = {
     date: date,
     duration: parseInt(dura),
