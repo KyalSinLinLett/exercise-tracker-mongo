@@ -46,10 +46,10 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
   const dateObj = date === undefined ? new Date() : new Date(data)
 
-  if (dateObj == "Invalid Date") return res.send('Failed to cast date')
+  if (dateObj == 'Invalid Date') return res.send('Failed to cast date')
 
   const payload = {
-    date: date,
+    date: dateObj,
     duration: parseInt(dura),
     description: desc
   }
