@@ -69,7 +69,15 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
       if (data == null) return res.send("Unknown userId")
 
-      return res.json(Object.assign({ _id: data._id, username: data.username }, payload))
+      const result = {
+        username: data.username,
+        description: payload.description,
+        duration: payload.duration,
+        _id: data._id,
+        date:  payload.date
+      }
+
+      return res.json(result)
     } 
   )
 })
@@ -87,7 +95,7 @@ app.get('/api/users/:_id/logs', (req, res) => {
 })
 
 app.use((req, res) => {
-  res.send('Not found')
+  res.send('not found')
 })
 
 const listener = app.listen(process.env.PORT || 3000, () => {
