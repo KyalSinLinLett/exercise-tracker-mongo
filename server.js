@@ -64,10 +64,26 @@ app.get('/api/users', (req, res) => {
 })
 
 app.post('/api/users/:_id/exercises', (req, res) => {
-  const { description: desc, ':_id': userId, duration: dura, date: date } = req.body
+  var { description: desc, ':_id': userId, duration: dura, date: date } = req.body
+
+  var notFound = [];
+  if (userId === "") {
+    notFound.push("`userId`");
+  }
+  if (desc === "") {
+    notFound.push("`description`");
+  }
+  if (dura === "") {
+    notFound.push("`duration`");
+  }
+  if (date === "") {
+    date = new Date().toDateString()
+  }
+
+  if (notFound.length > 0) return res.send(notFound.toString() + " required");
 
   const payload = {
-    date: date == '' ?  new Date() : date,
+    date: date,
     duration: parseInt(dura),
     description: desc
   }
