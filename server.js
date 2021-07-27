@@ -18,12 +18,6 @@ app.get('/', (req, res) => {
 // connect to mongodb
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
-app.get('*', (req, res) => {
-  res.send('Not found')
-}).post('*', (req, res) => {
-  res.send('Not found')
-})
-
 app.post('/api/users', (req, res) => {
   const user = new User({ username: req.body.username })
 
@@ -90,6 +84,10 @@ app.get('/api/users/:_id/logs', (req, res) => {
 
     return res.json(Object.assign({_id: data._id, username: data.username, count: logs.length, log: logs}))
   })
+})
+
+app.use((req, res) => {
+  res.send('Not found')
 })
 
 const listener = app.listen(process.env.PORT || 3000, () => {
