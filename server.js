@@ -63,32 +63,18 @@ app.get('/api/users', (req, res) => {
   })
 })
 
+app.post('/api/users//exercises', (req, res) => {
+  return res.send('not found').status(404)
+})
+
 app.post('/api/users/:_id/exercises', (req, res) => {
   var { description: desc, ':_id': userId, duration: dura, date: date } = req.body
 
-  var notFound = [];
-  if (userId === "") {
-    notFound.push("`userId`");
-  }
-  if (desc === "") {
-    notFound.push("`description`");
-  }
-  if (dura === "") {
-    notFound.push("`duration`");
-  }
-  if (date === "") {
-    date = new Date().toDateString()
-  }
-
-  if (notFound.length > 0) return res.send(notFound.toString() + " required");
-
   const payload = {
-    date: date,
+    date: date !== '' || new Date().toDateString(),
     duration: parseInt(dura),
     description: desc
   }
-
-  console.log(payload)
 
   User.findByIdAndUpdate(
     userId, 
