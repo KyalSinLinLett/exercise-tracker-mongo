@@ -44,17 +44,19 @@ app.get('/api/users', (req, res) => {
 
 app.post('/api/users/:_id/exercises', (req, res) => {
 
+  if (!req.body.date) req.body.date = new Date();
+
   var { description: desc, ':_id': userId, duration: dura, date: date } = req.body
 
-  if (date === '') {
-    date = new Date().toDateString()
-  }
+  // if (date === '') {
+  //   date = new Date().toDateString()
+  // }
 
-  date = new Date(date).toDateString()
+  // date = new Date(date).toDateString()
 
-  if(date == 'Invalid Date') {
-    return res.send(`Cast to date failed`)
-  }
+  // if(date == 'Invalid Date') {
+  //   return res.send(`Cast to date failed`)
+  // }
 
   const payload = {
     date: date,
